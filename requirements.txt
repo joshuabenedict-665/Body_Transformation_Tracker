@@ -1,0 +1,6 @@
+# Core image processing
+opencv-python
+numpy
+
+# Pose estimation & body landmark detection
+mediapipe
