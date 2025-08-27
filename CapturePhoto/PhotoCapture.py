@@ -9,27 +9,26 @@ def main():
     pose = mp_pose.Pose(static_image_mode=False, model_complexity=1, enable_segmentation=True)
     draw_utils = mp.solutions.drawing_utils
 
-    # Smart save path
     if not os.path.exists("image1.jpg"):
         img_path = "image1.jpg"
     elif not os.path.exists("image2.jpg"):
         img_path = "image2.jpg"
     else:
-        print("⚠️ Both images already exist.")
+        print(" Both images already exist.")
         return
 
     cap = cv2.VideoCapture(0)
-    print("📸 Capturing will start in 10 seconds... Stand straight!")
+    print(" Capturing will start in 10 seconds... Stand straight!")
     time.sleep(10)
 
     if not cap.isOpened():
         print("Cannot access camera.")
         return
 
-    print("📷 Camera started... Waiting for stable standing posture...")
+    print(" Camera started... Waiting for stable standing posture...")
 
     stable_start_time = None
-    required_duration = 3  # seconds to hold posture
+    required_duration = 3 
 
     required_landmarks = [
         mp_pose.PoseLandmark.NOSE,
@@ -74,7 +73,7 @@ def main():
                         stable_start_time = time.time()
                     elif time.time() - stable_start_time >= required_duration:
                         cv2.imwrite(img_path, frame)
-                        print(f"✅ Stable standing posture detected — Image saved as '{img_path}'")
+                        print(f" Stable standing posture detected — Image saved as '{img_path}'")
                         break
                 else:
                     stable_start_time = None
@@ -85,12 +84,12 @@ def main():
 
         cv2.imshow("Pose Detection", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            print("❌ Cancelled by user.")
+            print(" Cancelled by user.")
             break
 
     cap.release()
     cv2.destroyAllWindows()
-    print("📸 Camera released. Exiting...")
+    print(" Camera released. Exiting...")
 
 if __name__ == "__main__":
     main()
