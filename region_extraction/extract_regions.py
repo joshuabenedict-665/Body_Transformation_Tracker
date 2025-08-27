@@ -19,18 +19,14 @@ def align_and_scale_image(image, lm, target_shoulder_hip_dist=None):
     Align image so shoulders are horizontal and scale so shoulder–hip distance matches target
     """
     h, w = image.shape[:2]
-
-    # Shoulder & hip coordinates
     left_shoulder = np.array([lm[11].x * w, lm[11].y * h])
     right_shoulder = np.array([lm[12].x * w, lm[12].y * h])
     left_hip = np.array([lm[23].x * w, lm[23].y * h])
     right_hip = np.array([lm[24].x * w, lm[24].y * h])
 
-    # Midpoints
     mid_shoulder = (left_shoulder + right_shoulder) / 2
     mid_hip = (left_hip + right_hip) / 2
 
-    # Rotation to make shoulders horizontal
     angle = np.degrees(np.arctan2(
         right_shoulder[1] - left_shoulder[1],
         right_shoulder[0] - left_shoulder[0]
@@ -44,7 +40,6 @@ def align_and_scale_image(image, lm, target_shoulder_hip_dist=None):
     M_rot = cv2.getRotationMatrix2D(tuple(mid_shoulder), angle, 1.0)
     rotated = cv2.warpAffine(image, M_rot, (w, h))
 
-    # Scale so shoulder–hip distance matches target (if provided)
     rotated_lm = get_landmarks(rotated)
     cur_shoulder_hip_dist = np.linalg.norm(
         np.array([rotated_lm[11].x * w, rotated_lm[11].y * h]) -
@@ -58,7 +53,7 @@ def align_and_scale_image(image, lm, target_shoulder_hip_dist=None):
     return rotated
 
 def crop_region(image, lm, main_idx1, main_idx2, extra_idx=None, padding=40, force_lower_full=False):
-    """Crops region based on landmarks with optional full lower bound"""
+    
     if extra_idx is None:
         extra_idx = []
 
@@ -109,7 +104,6 @@ def main():
     lm1 = get_landmarks(img1)
     lm2 = get_landmarks(img2)
 
-    # Use image1's shoulder–hip distance as scale reference
     h1, w1 = img1.shape[:2]
     ref_shoulder_hip_dist = np.linalg.norm(
         np.array([lm1[11].x * w1, lm1[11].y * h1]) -
@@ -120,7 +114,6 @@ def main():
     img1_aligned = align_and_scale_image(img1, lm1, target_shoulder_hip_dist=ref_shoulder_hip_dist)
     img2_aligned = align_and_scale_image(img2, lm2, target_shoulder_hip_dist=ref_shoulder_hip_dist)
 
-    # Recalculate landmarks after alignment & scaling
     lm1_aligned = get_landmarks(img1_aligned)
     lm2_aligned = get_landmarks(img2_aligned)
 
